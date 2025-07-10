@@ -12,6 +12,7 @@ const adminRoutes = require("./routes/admin");
 const { Server } = require("http");
 
 const app = express();
+const PORT = process.env.PORT || 5000;
 
 // 🔧 Middleware Umum
 app.use(cors());
@@ -26,9 +27,15 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => console.log("✅ MongoDB Atlas connected"))
-  .catch((err) => console.error("❌ Gagal konek MongoDB Atlas:", err));
-
+  .then(() => {
+    console.log("✅ MongoDB Atlas connected");
+    app.listen(PORT, () => {
+      console.log(`🚀 Server jalan di http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("❌ Gagal konek MongoDB Atlas:", err);
+  });
 // 🔗 Routing utama
 app.use("/api/studios", studioRoutes);
 app.use("/api/admin", adminRoutes);
