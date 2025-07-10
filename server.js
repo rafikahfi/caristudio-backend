@@ -31,6 +31,35 @@ mongoose
   })
   .then(() => {
     console.log("✅ MongoDB Atlas connected");
+
+    // 🔗 Routing utama (dipindah ke sini agar hanya aktif setelah DB connect)
+    app.use("/api/studios", studioRoutes);
+    app.use("/api/admin", adminRoutes);
+
+    // 🧪 Cek koneksi server (buat manusia)
+    app.get("/", (req, res) => {
+      res.send("🚀 Server CariStudio aktif!");
+    });
+
+    // 🔍 Ping endpoint (buat frontend React ngecek koneksi)
+    app.get("/ping", (req, res) => {
+      res.status(200).send("OK");
+    });
+
+    // 🛡️ Global Error Handler
+    app.use((err, req, res, next) => {
+      if (err instanceof multer.MulterError || err.message.includes("file gambar")) {
+        return res.status(400).json({ message: err.message });
+      }
+
+      console.error("❌ Unhandled error:", err);
+      res.status(500).json({
+        message: "❌ Terjadi kesalahan pada server.",
+        error: err.message,
+      });
+    });
+
+    // 🚀 Jalankan server setelah semuanya siap
     app.listen(PORT, () => {
       console.log(`🚀 Server jalan di http://localhost:${PORT}`);
     });
@@ -38,37 +67,5 @@ mongoose
   .catch((err) => {
     console.error("❌ Gagal konek MongoDB Atlas:", err);
   });
-// 🔗 Routing utama
-app.use("/api/studios", studioRoutes);
-app.use("/api/admin", adminRoutes);
-
-// 🧪 Cek koneksi server (buat manusia)
-app.get("/", (req, res) => {
-  res.send("🚀 Server CariStudio aktif!");
-});
-
-// 🔍 Ping endpoint (buat frontend React ngecek koneksi)
-app.get("/ping", (req, res) => {
-  res.status(200).send("OK");
-});
-
-// 🛡️ Global Error Handler
-app.use((err, req, res, next) => {
-  if (err instanceof multer.MulterError || err.message.includes("file gambar")) {
-    return res.status(400).json({ message: err.message });
-  }
-
-  console.error("❌ Unhandled error:", err);
-  res.status(500).json({
-    message: "❌ Terjadi kesalahan pada server.",
-    error: err.message,
-  });
-});
-
-// 🚀 Jalankan server
-// const PORT = process.env.PORT || 5000;
-// app.listen(PORT, () => {
-//   console.log(`🚀 Server jalan di http://localhost:${PORT}`);
-// });
 
 module.exports = app;
