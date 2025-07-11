@@ -14,7 +14,13 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // 🔧 Middleware Umum
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://caristudio.my.id",
+    credentials: true, // ini optional kalau lu pakai cookie atau auth
+  })
+);
+
 app.use(express.json());
 
 // ✅ Serve folder "uploads"
